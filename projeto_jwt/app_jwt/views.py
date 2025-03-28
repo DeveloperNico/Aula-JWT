@@ -3,6 +3,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Username
+from django.contrib.auth import authenticate
+from rest_framework_simplejwt.tokens import RefreshToken
 
 # Create your views here.
 
@@ -32,3 +34,18 @@ def registrar(request):
 
     return Response({"Mensagem: ": "O usuário foi cadastrado com sucesso"}, status=status.HTTP_201_CREATED)
 
+@api_view(['POST'])
+def logar(request):
+    nome = request.data.get('username')
+    senha = request.data.get('senha')
+
+    user = authenticate(username=nome, password=senha)
+
+    if user:
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'acesso': str(refresh.access_token),
+            'refresh': str(refresh)
+        }, status=status.HTTP_200_OK)
+    else:
+        return Response({'Erro: ': "Digite o usuário e senha corretos!"}, status=status.HTTP_401_UNAUTHORIZED)
