@@ -1,10 +1,11 @@
 from django.shortcuts import render
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Username
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 
@@ -49,3 +50,8 @@ def logar(request):
         }, status=status.HTTP_200_OK)
     else:
         return Response({'Erro: ': "Digite o usuário e senha corretos!"}, status=status.HTTP_401_UNAUTHORIZED)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def view_protegida(request):
+    return Response({"Mensagem: ": "OLÁ 2DS_MB15"}, status=status.HTTP_200_OK)
